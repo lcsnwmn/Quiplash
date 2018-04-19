@@ -1,0 +1,35 @@
+body {
+   background-image: url("images/example.jpg");
+   background-color: #cccccc;
+}
+
+
+div.instruct_text {
+	width: 200px; 
+	float: left;
+}
+
+div.active {
+	width: 300px;
+}
+div.inactive {
+	display: none;
+}
+
+div.player_list {
+	width: 200px; 
+	float: right;
+}
+
+table.player_list {
+	font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+	border: 1px solid black;
+}
+th.player {
+	border: 1px solid black;
+}
+td.player  {
+	border: 1px solid black;
+}
