@@ -1,30 +1,46 @@
+from _quiplash_api import _quiplash_api
 import cherrypy
 import re, json
 
-@cherrypy.expose
-class QuiplashWebService(object):
-    exposed = True
+class Gamestate(object)
 
-    @cherrypy.tools.accept(media='text/plain')
-    
     def __init__(self,DB):
         self.db = DB
-        self.dict = {"gamestate" : "lobby"}
 
-    def GS_GET(self):
-        return self.dict['gamestate']
+    #GET for /gamestate
+    def GET(self):
+        output = {'result':'success'}
+        state = self.db.get_gamestate()
+        if state is None:
+            output['result'] = 'error'
+            output['message'] = 'key not found'
+        else:
+            output['gamestate'] = state
 
-    def POST(self):
-        some_string = 'Initial'
-        self.dict['gamestate'] = some_string
-        return some_string
+        return json.dumps(output)
 
-    def GS_PUT(self):
-        data = cherrypy.request.body.read()
-        self.dict['gamestate'] = str(data)
+    #PUT for /gamestate
+    def PUT(self, state):
 
-    def DELETE(self):
-        self.dict.pop('gamestate', None)
+        output = {'result':'success'}
+        data = json.loads(cherrypy.request.body.read())
+        try:
+            info = []
+            info.append(data['gamestate'])
+            self.db.set_gamestate(info)
+        except Exception as ex:
+            output['result'] = str(ex)
+        return json.dumps(output)
+
+class Players(object):
+
+    def __init__(self,DB):
+        self.db = DB
+
+class Questions(objects):
+
+    def __init__(self,DB):
+        self.db = DB
 
 class Options:
     def OPTIONS(self, *args, **kwargs):
@@ -36,19 +52,25 @@ def CORS():
     cherrypy.response.headers["Access-Control-Allow-Credentials"] = "true"
 
 def start_service():
-    DB = ""
-    quiplash = QuiplashWebService(DB)
+
+    DB = _quiplash_api()
+    players = Players(DB)
+    questions = Questions(DB)
+    gamestate = Gamestate(DB)
     optionsController = Options()
     dispatcher = cherrypy.dispatch.RoutesDispatcher()
 
-    dispatcher.connect('gamestate_get', '/gamestate',controller=quiplash,action = 'GS_GET',conditions=dict(method=['GET']))
-    dispatcher.connect('gamestate_put','/gamestate',controller=quiplash,action = 'GS_PUT',conditions=dict(method=['PUT']))
+    dispatcher.connect('gamestate_get', '/gamestate',controller=gamestate,action = 'GET',conditions=dict(method=['GET']))
+    dispatcher.connect('gamestate_put','/gamestate',controller=gamestate,action = 'PUT',conditions=dict(method=['PUT']))
 
     dispatcher.connect('options_gamestate', '/gamestate', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
-    #dispatcher.connect('options_users', '/users', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
-    #dispatcher.connect('options_questions', '/questions', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
+    dispatcher.connect('options_users', '/users', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
+    dispatcher.connect('options_questions', '/questions', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
 
-    conf = {'global': {'server.socket_host': 'student01.cse.nd.edu', 'server.socket_port': 9442},'/' : {'request.dispatch':dispatcher,'tools.CORS.on':True,}}
+    conf = {'global': {'server.socket_host':      'student01.cse.nd.edu', 
+                       'server.socket_port':      9898},
+                       '/' : {'request.dispatch': dispatcher,
+                              'tools.CORS.on':    True,}}
 
     #Update configuration and start the server
     cherrypy.config.update(conf)
