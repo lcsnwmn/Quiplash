@@ -2,7 +2,7 @@ from _quiplash_api import _quiplash_api
 import cherrypy
 import re, json
 
-class Gamestate(object)
+class Gamestate(object):
 
     def __init__(self,DB):
         self.db = DB
