@@ -26,9 +26,6 @@ class Gamestate(object):
 
         output = {'result':'success'}
         data = json.loads(cherrypy.request.body.read())
-        print "FROM SERVER:"
-        print data
-        print "END"
         try:
             output = self.db.set_gamestate(data)
         except Exception as ex:
@@ -39,6 +36,26 @@ class Players(object):
 
     def __init__(self,DB):
         self.db = DB
+
+    # Get Player Names
+    def GET(self):
+        output = {'result':'success'}
+        users = self.db.get_users()
+        if len(users) == 0:
+            output['result'] = "Error: No users"
+            return json.dumps(output)
+        else:
+            for i, user in enumerate(users):
+                output[str(i)] = user
+        return json.dumps(output)
+
+    #PUT for /players/:id
+    def PUT(self):
+        output = {'result':'success'}
+        name = json.loads(cherrypy.request.body.read())
+        self.db.set_user(name)
+        return json.dumps(output)
+        
 
 class Questions(object):
 
@@ -63,11 +80,16 @@ def start_service():
     optionsController = Options()
     dispatcher = cherrypy.dispatch.RoutesDispatcher()
 
+    # Gamestate
     dispatcher.connect('gamestate_get', '/gamestate',controller=gamestate,action = 'GET',conditions=dict(method=['GET']))
     dispatcher.connect('gamestate_put','/gamestate',controller=gamestate,action = 'PUT',conditions=dict(method=['PUT']))
 
+    # Players
+    dispatcher.connect('players_get', '/players',controller=players,action = 'GET',conditions=dict(method=['GET']))
+    dispatcher.connect('players_put','/players/:id',controller=players,action = 'PUT',conditions=dict(method=['PUT']))
+
     dispatcher.connect('options_gamestate', '/gamestate', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
-    dispatcher.connect('options_users', '/users', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
+    dispatcher.connect('options_players', '/players', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
     dispatcher.connect('options_questions', '/questions', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
 
     conf = {'global': {'server.socket_host':      'student01.cse.nd.edu', 

@@ -29,13 +29,20 @@ class _quiplash_api:
         return len(db.players)
 
     def set_user(db, name):
-        num_users = get_num_users() + 1
+        num_users = db.get_num_users() + 1
         if num_users <= 4:
             players[str(num_users)] = {
                 "name"  : name,
                 "score" : 0,
                 "qid"   : [num_users % 4, (num_users+1) % 4]
             }
+
+    def get_users(db):
+        num_users = db.get_num_users()
+        users = []
+        for user in range(num_users):
+            users.append(db.players[str(user+1)]["name"])
+        return users
 
     def get_answer(db, qid, uid):
         return db.questions[str(qid)][str(uid)]
