@@ -10,24 +10,27 @@ class Gamestate(object):
     #GET for /gamestate
     def GET(self):
         output = {'result':'success'}
+        options = ["lobby", "prompts", "answers", "tally"]
         state = self.db.get_gamestate()
-        if state is None:
+        if state not in options:
+            print state
             output['result'] = 'error'
-            output['message'] = 'key not found'
+            output['message'] = 'key not found: ' + state
         else:
-            output['gamestate'] = state
+            output['result'] = state
 
         return json.dumps(output)
 
     #PUT for /gamestate
-    def PUT(self, state):
+    def PUT(self):
 
         output = {'result':'success'}
         data = json.loads(cherrypy.request.body.read())
+        print "FROM SERVER:"
+        print data
+        print "END"
         try:
-            info = []
-            info.append(data['gamestate'])
-            self.db.set_gamestate(info)
+            output = self.db.set_gamestate(data)
         except Exception as ex:
             output['result'] = str(ex)
         return json.dumps(output)
