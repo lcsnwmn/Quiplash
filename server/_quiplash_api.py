@@ -1,5 +1,5 @@
 class _quiplash_api:
-	def _init_(self):
+	def __init__(self):
 		self.players = {}
 		self.gamestate = "Null"
 		self.questions = {}
@@ -18,7 +18,7 @@ class _quiplash_api:
 
 	def get_gamestate(db):
 		if db.gamestate != "Null":
-			return db.gamestate
+			return self.db.gamestate
 		else:
 			return "Error - game has not started."
 

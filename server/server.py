@@ -37,7 +37,7 @@ class Players(object):
     def __init__(self,DB):
         self.db = DB
 
-class Questions(objects):
+class Questions(object):
 
     def __init__(self,DB):
         self.db = DB
