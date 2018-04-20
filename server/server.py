@@ -48,7 +48,7 @@ def start_service():
     #dispatcher.connect('options_users', '/users', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
     #dispatcher.connect('options_questions', '/questions', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
 
-    conf = {'global': {'server.socket_host': '127.0.0.1', 'server.socket_port': 8080},'/' : {'request.dispatch':dispatcher,'tools.CORS.on':True,}}
+    conf = {'global': {'server.socket_host': 'student01.cse.nd.edu', 'server.socket_port': 9442},'/' : {'request.dispatch':dispatcher,'tools.CORS.on':True,}}
 
     #Update configuration and start the server
     cherrypy.config.update(conf)
