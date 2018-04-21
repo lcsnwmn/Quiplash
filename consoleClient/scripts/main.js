@@ -26,9 +26,8 @@ function getPlayerName() {
 
 	document.getElementById("test").innerHTML = "Worked";
 	var xhr = new XMLHttpRequest();
-    	xhr.open("GET",  server_url+"/players/1/name", true);
+    	xhr.open("GET",  server_url+"/players/", true);
 	xhr.onload = function() {
-		document.getElementById("test").innerHTML = "Failed";
 		if (xhr.status == 500) {
 			document.getElementById("test").innerHTML = "Failed";
 		}
