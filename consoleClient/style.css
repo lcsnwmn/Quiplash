@@ -24,6 +24,10 @@ h3#state_title {
 	text-align: center;
 }
 
+img#avatar {
+	height: 100px;
+	width: 100px;
+}
 
 div.instruct {
 	width: 200px; 
