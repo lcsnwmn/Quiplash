@@ -8,6 +8,14 @@ body {
 	height: 80%;
 }
 
+/*title declarations*/
+div#title {
+   	margin: auto;
+	border-radius: 25px;
+	background: rgba(200,0,255, 0.75);
+	width: 40%; 
+}
+
 h3#page_title {
 	color: green;
 	font-weight:bold;
@@ -16,6 +24,7 @@ h3#page_title {
 	text-align: center;
 }
 
+/*state box*/
 h3#state_title {
 	color: red;
 	font-weight:bold;
@@ -24,21 +33,58 @@ h3#state_title {
 	text-align: center;
 }
 
-img#avatar {
-	height: 100px;
-	width: 100px;
-}
-
-div.instruct {
-	width: 200px; 
-	float: right;
-}
-
 div.active {
-	width: 500px;
+	width: 50%;
+	height: 93%;
+	border-radius: 25px;
+	background: rgba(200,0,255, 0.75);
+   	margin: auto;
 }
 div.inactive {
 	display: none;
+}
+
+/*prompt*/
+div#question {
+	width: 50%;
+	height: 20%;
+	border-radius: 25px;
+	background: rgba(25,197,30, 0.75);
+   	margin: auto;
+}
+h4#question_desc {
+	text-align: center;
+}
+div#prompt_counter {
+	width: 20%;
+	border-radius: 25px;
+	background: rgba(197,25,25, 0.5);
+   	margin: auto;
+}
+h1#prompt_counter_num {
+	font-size: 200%;
+	text-align: center;
+}
+
+/*answers*/
+div#answer1 {
+	float: left;
+	border-radius: 25px;
+	background: rgba(197,25,25, 0.5);
+}
+div#answer2 {
+
+   	float: right;
+	border-radius: 25px;
+	background: rgba(197,25,25, 0.5);
+}
+
+
+
+/*Player table and Avatars*/
+img#avatar {
+	height: 100px;
+	width: 100px;
 }
 
 div.player_list {
@@ -57,12 +103,26 @@ table.player_list {
 }
 th.player_list {
 	color: lime;
+	width: 30%;
 	border: 1px solid #F660AB;
 }
 td.player_list  {
 	color: lime;
+	width: 30%;
 	border: 1px solid #F660AB;
 	font-weight:bold;
 	text-indent: 5px;
 	height: 100px;
 }
+
+
+/*Instructions box*/
+div.instruct {
+	width: 20%;
+	height: 100%;
+	float: right;
+	border-radius: 25px;
+	background: rgba(200,0,255, 0.75);
+}
+
+

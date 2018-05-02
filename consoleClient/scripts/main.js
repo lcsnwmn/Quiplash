@@ -1,99 +1,163 @@
 
 
 var states = ["lobby", "prompt", "answers", "tally"];
-var currentState = states[0];
+var timer_count = 0;
+var currentState = states[1];
+var stateIndex = 0;
 
 var server_url = "http://student01.cse.nd.edu:9898";
 var max_players = 4;
 
-function testFunction() {
+
+//GET GAME STATE FROM SERVER AND CHANGE MAIN PAGE TO STATE
+function checkStateChange(){
+	stateFunctions();//remove
+	/*
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function() {
-		if (xhr.status == 200) {
-			var jsonObj = JSON.parse(xhr.responseText);
-			document.getElementById("test").innerHTML = jsonObj['result'];
+		if (xhr.readyState == 4 && xhr.status == 200) {
+			var gamestate = JSON.parse(xhr.responseText)['message']['gamestate'];
+
+			if (currentState != gamestate) {
+				timer_count = 0;
+				document.getElementById(currentState).className = "inactive";
+				currentState = gamestate;
+				document.getElementById(currentState).className = "active";
+			}
+			else {
+				stateFunctions();
+			}
 		}
 		else{
-			document.getElementById("test").innerHTML = xhr.status;
+			
 		}
 	}
 	xhr.open("GET",  server_url+"/gamestate", true);
 	xhr.send();
+	*/
 }
 
+//DEPENDING ON STATE PERFORM FUNCTION FOR STATE
+function stateFunctions() {
+	if (currentState == "lobby") {
+		getPlayers();
+		var currentText = "Waiting for Players.";
+		for (var increment = 0; increment < (timer_count%3); increment++) {
+			currentText = currentText + '.';
+		}
+		document.getElementById("lobby_timer_text").innerHTML = currentText;
+		timer_count = timer_count + 1;
+	}
+	else if (currentState == "prompt") {
+		getPrompt();
+	}
+	else if (currentState == "answers") {
+		//getAnswers();
+	}
+	else {
+		//tallyScore();
+	}
+}
 
-
-function getPlayerName() {
-
-	document.getElementById("test").innerHTML = "Worked";
+//CHECK FOR AND GET PLAYERS
+function getPlayers() {
+/*
+	for (var index = 1; index <= max_players; index++) {
+		var pnum = index.toString();
+		document.getElementById("p"+pnum).innerHTML = "pbui";
+	}
+*/
+	//currently only get result text
 	var xhr = new XMLHttpRequest();
 	xhr.onload = function() {
 		if (xhr.readyState == 4 && xhr.status == 200) {
 			var jsonObj = JSON.parse(xhr.responseText);
-			document.getElementById("test").innerHTML = jsonObj['result'];
 			for (var index = 1; index <= 4; index++) {
 				var pnum = index.toString();
 				document.getElementById("p"+pnum).innerHTML = jsonObj['result'];
-				console.log(jsonObj["p"+pnum]);
 			}
 		}
 		else{
-			document.getElementById("test").innerHTML = xhr.status;
+			
 		}
 		
 	}
 	xhr.open("GET",  server_url+"/players", true);
-	return xhr.send();
+	xhr.send();
+
 }
 
-function checkStateChange(){
-
-
-	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function() {
-		if (xhr.status == 200) {
-			var jsonObj = JSON.parse(xhr.responseText);
-			document.getElementById("test").innerHTML = jsonObj['result'];
-			document.getElementById(state).className = "inactive";
-			document.getElementById(newState).className = "active";
-		}
-		else{
-			document.getElementById("test").innerHTML = xhr.status;
-		}
+//RETRIEVE QUESTION PROMPT FROM SERVER
+function getPrompt() {
+	
+	//temp code
+	document.getElementById("question_desc").innerHTML = "Why did the chicken cross the road?";
+	var timer_num = 0;
+	if (timer_count < 60) {
+		timer_num = 60 - timer_count;
 	}
-	var players = getPlayerName();
-	console.log(players);
-	for (var index = 1; index >= 4; index++) {
-		var pnum = index.toString();
-		document.getElementById("p"+pnum).innerHTML = jsonObj['result'];
-	}
+	document.getElementById("prompt_counter_num").innerHTML = timer_num.toString();
+	timer_count = timer_count + 1;
 	/*
-	xhr.open("GET",  server_url+"/gamestate", true);
-	xhr.send();
-	var statesLength = states.length;
-	for (var index = statesLength-1; index >= 0; index--) {
-		state = states[index];
-		if (currentState == state) {
-			var newIndex = (index + 1) % statesLength;
-			var newState = states[newIndex];
-			document.getElementById(state).className = "inactive";
-			document.getElementById(newState).className = "active";
-			currentState = newState;
-			break;
-		}
-	}
 	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function() {
-
+	xhr.onload = function() {
+		console.log("prompt");
+		if (xhr.readyState == 4 && xhr.status == 200) {
+			var jsonObj = JSON.parse(xhr.responseText);
+			document.getElementById("question_desc").innerHTML = jsonObj['result'];
+		}
+		else {
+			document.getElementById("question_desc").innerHTML = "Why did the chicken cross the road?";
+		}
 		
 	}
-	xhr.open("GET",  server_url+"/gamestate/", true);
+	xhr.open("GET",  server_url+"/questions", true);
 	xhr.send();
-*/
+	*/
 }
 
 
-//var intervalID = setInterval(checkStateChange, 3000);
+
+var intervalID = setInterval(checkStateChange, 1000);
+
+
+
+//STATE TOGGLE, ONLY FOR TESTING
+function toggleStates() {
+	document.getElementById(currentState).className = "inactive";
+	stateIndex = (stateIndex + 1)%4;
+	currentState = states[stateIndex];
+	document.getElementById(currentState).className = "active";
+}
+
+
+//PUT AND GET, ONLY FOR TESTING
+function putTest() {
+	/*var xhr = new XMLHttpRequest();
+	xhr.open("PUT",  server_url+"/gamestate", true);
+	xhr.onload = function () {
+		if (xhr.readyState == 4 && xhr.status == "200") {
+			console.log("success put");
+		} else {
+			console.error("fail");
+		}
+	}
+	xhr.send('{"gamestate": "lobby"}');
+	console.log("sent");*/
+
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET",  server_url+"/gamestate", true);
+	xhr.onload = function () {var users = JSON.parse(xhr.responseText);
+		if (xhr.readyState == 4 && xhr.status == "200") {
+			console.log("success get");
+			console.log(xhr.responseText);
+		} else {
+			console.error("fail");
+		}
+	}
+	xhr.send();
+	console.log("sent");
+}
 
 
 

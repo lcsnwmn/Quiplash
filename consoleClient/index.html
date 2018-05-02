@@ -11,15 +11,11 @@
 <center><h3 id="page_title">QuipLash!</h3></center>
 </div>
 
+<!--
 <button type="button"
-onclick="testFunction()">Change Content
+onclick="toggleStates()">Test button
 </button>
-
-<button type="button"
-onclick="checkStateChange()">State Change
-</button>
-
-<p id="test">Not Worked</p>
+-->
 
 <div class="instruct">
 	<h3 class="instruct_title">How to play!</h3>
@@ -27,7 +23,6 @@ onclick="checkStateChange()">State Change
 </div>
 
 <div class="player_list">
-	<h3>In game...</h3>
 	<table class="player_list">
 		<tr class="player_list">
 			<th class="player_list">Player</th>
@@ -58,16 +53,36 @@ onclick="checkStateChange()">State Change
 
 </div>
 
-<div id="lobby" class="active">
+<div id="lobby" class="inactive">
 <h3 id="state_title">Lobby</h3>
+
+<h4 id="lobby_timer_text">Waiting for Players</h4>
+
 </div>
 
 <div id="prompt" class="inactive">
 <h3 id="state_title">Prompt</h3>
+
+<div id="question">
+<h4 id="question_desc">Why did the chicken cross the road?</h4>
+</div>
+<div id="prompt_counter">
+<h1 id="prompt_counter_num">60<h1>
 </div>
 
-<div id="answers" class="inactive">
+</div>
+
+<div id="answers" class="active">
 <h3 id="state_title">Answers</h3>
+<div id="question">
+<h4 id="question_desc">Why did the chicken cross the road?</h4>
+</div>
+<div id="answer1">
+<h4 id="answer1_desc">Grab a burg!</h4>
+</div>
+<div id="answer2">
+<h4 id="answer2_desc">Snatch a taco!</h4>
+</div>
 </div>
 
 <div id="tally" class="inactive">
