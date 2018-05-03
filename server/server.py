@@ -15,7 +15,7 @@ class Gamestate(object):
         if state not in options:
             print state
             output['result'] = 'error'
-            output['message'] = 'key not found: ' + state
+            output['message'] = state
         else:
             output['result'] = state
 
@@ -53,7 +53,10 @@ class Players(object):
     def PUT(self):
         output = {'result':'success'}
         name = json.loads(cherrypy.request.body.read())
-        self.db.set_user(name)
+        try:
+            output = self.db.set_user(name)
+        except Exception as ex:
+            output['result'] = str(ex)
         return json.dumps(output)
         
 

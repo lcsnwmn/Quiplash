@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<link rel="stylesheet" type="text/css" href="style.css">
+<script src="scripts/main.js"></script>
+
+
+<html>
+<body>
+
+	<div class="joingame">
+		<!-- Header !-->
+		<div class="header">
+			Quiplash!
+		</div>
+		<!-- Submit Name !-->
+		<div class="answer">
+			<form name="Name">
+				Enter name: <input type="text" name="FirstName" value=""><br>
+				<input type="button" value="Play!" onclick="submitName()">
+			</form>
+		</div>
+	</div>
+
+	<div class="waitforplayers">
+		Waiting for more players...
+	</div>
+
+	<div class="gettinganswers">
+		<!-- Display Question 1 !-->
+		<div id="q1"></div>
+
+		<!-- Collect Answer 1 !-->
+		<div id="a1">
+			<form name="Answer 1">
+				Answer: <input type="text" name="answer" value=""><br>
+				<input type="button" value="Submit" onclick="submitAnswer()"">
+			</form>
+		</div>
+
+		<!-- Display Question 2 !-->
+		<div id="q2"></div>
+
+		<!-- Collect Answer 2 !-->
+		<form name="Answer 2">
+			Answer: <input type="text" name="answer" value=""><br>
+			<input type="button" value="Submit" onclick="submitAnswer()"">
+		</form>
+	</div>
+
+	<div class="displayquestion">
+		<!-- Display Question !-->
+		<div id="question"></div>
+	</div>
+
+	<div class="displayanswersgetvotes">
+		<!-- Display Answers !-->
+		<div id="answers">
+			<div id="a1">
+				<!-- Vote Button 1!-->
+			</div>
+			<div id="a2">
+				<!-- Vote Button 2!-->
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>
