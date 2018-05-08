@@ -22,9 +22,10 @@ class _quiplash_api:
             print questions
             if (i+1) in questions:
                 db.questions[str(ind)] = {"prompt" : question,
-                                            str((ind % 4)+1) : "",
-                                            str(((ind - 1) % 4)+1) : "" 
-                                            }
+                                          "answers": { str((ind % 4)+1) : "",
+                                                       str(((ind - 1) % 4)+1) : "" 
+                                                     }
+                                         }
                 ind = ind + 1
 
     def get_question(db, qid):
