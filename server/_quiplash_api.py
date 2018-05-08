@@ -13,13 +13,17 @@ class _quiplash_api:
         for i, l in enumerate(f):
             counter = counter + 1
 
+	#print "counter" + str(counter)
         questions = random.sample(range(1, counter+1), 4)
 
-        for i, question in enumerate(f):
-            if i in questions:
+	f2 = open(q_file, "r")
+        for i, question in enumerate(f2):
+	    print i
+            print questions
+            if (i+1) in questions:
                 db.questions[str(ind)] = {"prompt" : question,
-                                            str(ind % 4) : "",
-                                            str((ind - 1) % 4) : "" 
+                                            str((ind % 4)+1) : "",
+                                            str(((ind - 1) % 4)+1) : "" 
                                             }
                 ind = ind + 1
 
