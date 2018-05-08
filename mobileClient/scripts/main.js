@@ -6,6 +6,10 @@ var player_qid = [-1, -1];
 var q1_submit = false;
 var q2_submit = false;
 
+var buttonsEnabled = true;
+
+var intervalID = setInterval(checkQuestionAnswers, 1000);
+
 //THE WAY ITS SET UP A USER SHOULD NOT REFRESH PAGE OR ELSE ALL VARIABLES ARE RESET
 
 //SUBMIT PLAYER NAME
@@ -102,12 +106,13 @@ function submitAnswer(ans_type) {
 }
 
 //RETRIEVE QUESTION FROM SERVER
+//USE 'q1_num' TO DESIGNATE PLAYER QID INDEX
 function setQuestions(q1_num) {
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function() {
 		if (xhr.status == 200){
 			var question = JSON.parse(xhr.responseText)['message'][player_qid[q1_num-1].toString()]['prompt'];
-			console.log('q'+q1_num.toString());
+			//SET TO HTML
 			document.getElementById('que'+q1_num.toString()).innerHTML = question;
 		} else {
 			console.error("fail4");
@@ -118,7 +123,26 @@ function setQuestions(q1_num) {
 }
 
 
-
-function
+//GET QUESTIONS AND ANSWERS WHEN AVAILABLE
+//VARIABLE 'q2_num' SPECFICIES WHICH QUESTION FROM SERVER INDEX
+function checkQuestionAnswers(q2_num) {
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function() {
+		if (xhr.status == 200){
+			var questionObj = JSON.parse(xhr.responseText)['message'][q2_num.toString()];
+			var question = questionObj['prompt'];
+			var answer = questionObj['answer'];
+			var answer2 = questionObj['answer2'];
+			//SET TO HTML
+			document.getElementById('que3').innerHTML = question;
+			document.getElementById('ans1').innerHTML = answer;
+			document.getElementById('ans1').innerHTML = answer2;
+		} else {
+			console.error("fail4");
+		}
+	}
+	xhr.open("GET",  server_url+"/questions", true);
+	xhr.send();
+}
 
 
