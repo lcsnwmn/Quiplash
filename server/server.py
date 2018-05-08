@@ -50,7 +50,7 @@ class Players(object):
         return json.dumps(output)
 
     #PUT for /players/:id
-    def PUT(self):
+    def PUT(self, id=0):
         output = {'result':'success'}
         name = json.loads(cherrypy.request.body.read())
         try:
@@ -64,6 +64,28 @@ class Questions(object):
 
     def __init__(self,DB):
         self.db = DB
+
+    # Get Question /question/{questionID}
+    def GET(self, qid=0):
+        output = {'result':'success'}
+        question = self.db.get_question(qid)
+        if question is None:
+            output['result'] = "Error: question not found"
+        else:
+            output['id'] = qid
+            output['question'] = question
+        return json.dumps(output)
+
+    # Put Question /question/{questionID}/answers/{uID}
+    def PUT(self, qid=0, uid=0):
+        output = {'result':'success'}
+        answer = json.loads(cherrypy.request.body.read())
+        try:
+            output = self.db.set_answer(qid, uid, answer)
+        except Exception as ex:
+            output['result'] = str(ex)
+        return json.dumps(output)
+
 
 class Options:
     def OPTIONS(self, *args, **kwargs):
@@ -90,6 +112,11 @@ def start_service():
     # Players
     dispatcher.connect('players_get', '/players',controller=players,action = 'GET',conditions=dict(method=['GET']))
     dispatcher.connect('players_put','/players/:id',controller=players,action = 'PUT',conditions=dict(method=['PUT']))
+
+    # Questions
+    dispatcher.connect('questions_get', '/questions/:qid',controller=questions,action = 'GET',conditions=dict(method=['GET']))
+    dispatcher.connect('questions_put','/questions/:qid/answers/:uid',controller=questions,action = 'PUT',conditions=dict(method=['PUT']))
+
 
     dispatcher.connect('options_gamestate', '/gamestate', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
     dispatcher.connect('options_players', '/players', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
