@@ -2,7 +2,8 @@
 
 var states = ["lobby", "prompts", "answers", "tally"];
 var currentState = "none";
-var timer_count = 0;
+var timer = 60;
+var goal = 60;
 
 
 var round = 1;
@@ -12,7 +13,7 @@ var max_players = 4;
 var server_url = "http://student01.cse.nd.edu:9898";
 
 
-var intervalID = setInterval(getState, 1000);
+var intervalID = setInterval(getState, 500);
 
 //GET GAME STATE FROM SERVER AND CHANGE MAIN PAGE TO STATE
 function getState(){
@@ -55,7 +56,7 @@ function stateFunctions() {
 		lobbyWait();
 	}
 	else if (currentState == "prompts") {
-		//getPrompt();
+		getPrompt();
 	}
 	else if (currentState == "answers") {
 		//getAnswers();
@@ -150,18 +151,26 @@ function change_state(state){
 	xhr.send(request);
 }
 
-/*
 //RETRIEVE QUESTION PROMPT FROM SERVER
 function getPrompt() {
-	
-	//COUNT DOWN FOR QUESTION (PROBABLY NOT NEEDED)
-	var timer_num = 0;
-	if (timer_count < 60) {
-		timer_num = 60 - timer_count;
+	if (timer == 60){
+		var now = new Date().getTime();
+		goal = now + 60000;
+		timer = 59;
 	}
-	document.getElementById("prompt_counter_num").innerHTML = timer_num.toString();
-	timer_count = timer_count + 1;
+	else if (timer > 0){
+		var curr = new Date().getTime();
+		console.log("G: " + goal + ", C: " + curr)
+		var distance = goal - curr;
+		var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+		console.log(seconds)
+		timer = seconds - 1;
+		//console.log(timer);
+		document.getElementById("prompt_counter_num").innerHTML = seconds;
+	}
 
+
+	/*
 	//IF COUNT DOWN HITS ZERO GO TO ANSWERS AFTER PROMPT
 	//BY SENDING 'anwsers' TO GAME STATE TO THEN BE RESEEN BY main.js
 	if (timer_num <= 0) {
@@ -195,9 +204,10 @@ function getPrompt() {
 		xhr.open("GET",  server_url+"/questions", true);
 		xhr.send();
 	}
+	*/
 }
 
-
+/*
 function getAnswers() {
 	//LIKE PROMPT COUNT DOWN
 	var timer_num = 0;
