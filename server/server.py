@@ -37,7 +37,7 @@ class Players(object):
     def __init__(self,DB):
         self.db = DB
 
-    # Get Player Names
+    # Get Player Names at /players
     def GET(self):
         output = {'result':'success'}
         users = self.db.get_users()
@@ -58,26 +58,54 @@ class Players(object):
         except Exception as ex:
             output['result'] = str(ex)
         return json.dumps(output)
+
+    #GET for /players/:uid/score
+    def GET_SCORE(self, uid=0):
+        output = {'result':'success'}
+        score = self.db.get_score(uid)
+        output["score"] = score
+        return json.dumps(output)
+
+    #PUT for /players/:uid/score
+    def PUT_SCORE(self, uid=0):
+        output = {'result':'success'}
+        score = json.loads(cherrypy.request.body.read())
+        try:
+            output = self.db.set_score(uid, score)
+        except Exception as ex:
+            output['result'] = str(ex)
+        return json.dumps(output)
         
 
 class Questions(object):
 
     def __init__(self,DB):
         self.db = DB
+        DB.load_questions("questions.txt")
 
     # Get Question /question/{questionID}
     def GET(self, qid=0):
         output = {'result':'success'}
-        question = self.db.get_question(qid)
-        if question is None:
-            output['result'] = "Error: question not found"
-        else:
+        try:
+            question = self.db.get_question(qid)
             output['id'] = qid
             output['question'] = question
-        return json.dumps(output)
+        except Exception as ex:
+            output['result'] = "Error: question not found"
+            return json.dumps(output)
 
-    # Put Question /question/{questionID}/answers/{uID}
-    def PUT(self, qid=0, uid=0):
+    def GET_ANSWER(self, qid=0, uid=0):
+        output = {'result':'success'}
+        try:
+            answer = self.db.get_answer(qid,uid)
+            output["answer"] = answer
+            return json.dumps(output)
+        except Exception as ex:
+            output['result'] = ex
+            return json.dumps(output)
+
+    # Put Answer /question/{questionID}/answers/{uID}
+    def PUT_ANSWER(self, qid=0, uid=0):
         output = {'result':'success'}
         answer = json.loads(cherrypy.request.body.read())
         try:
@@ -112,10 +140,13 @@ def start_service():
     # Players
     dispatcher.connect('players_get', '/players',controller=players,action = 'GET',conditions=dict(method=['GET']))
     dispatcher.connect('players_put','/players/:id',controller=players,action = 'PUT',conditions=dict(method=['PUT']))
+    dispatcher.connect('score_get', '/players/:uid/score',controller=players,action = 'GET_SCORE',conditions=dict(method=['GET']))
+    dispatcher.connect('score_put','/players/:uid/score',controller=players,action = 'PUT_SCORE',conditions=dict(method=['PUT']))
 
     # Questions
     dispatcher.connect('questions_get', '/questions/:qid',controller=questions,action = 'GET',conditions=dict(method=['GET']))
-    dispatcher.connect('questions_put','/questions/:qid/answers/:uid',controller=questions,action = 'PUT',conditions=dict(method=['PUT']))
+    dispatcher.connect('answer_get', '/questions/:qid/answers/:uid',controller=questions,action = 'GET_ANSWER',conditions=dict(method=['GET']))
+    dispatcher.connect('answer_put','/questions/:qid/answers/:uid',controller=questions,action = 'PUT_ANSWER',conditions=dict(method=['PUT']))
 
 
     dispatcher.connect('options_gamestate', '/gamestate', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
