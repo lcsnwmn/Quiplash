@@ -17,7 +17,7 @@ class _quiplash_api:
 
         for i, question in enumerate(f):
             if i in questions:
-                self.questions[str(ind)] = {"prompt" : question,
+                db.questions[str(ind)] = {"prompt" : question,
                                             str(ind % 4) : "",
                                             str((ind - 1) % 4) : "" 
                                             }
@@ -32,7 +32,7 @@ class _quiplash_api:
     def set_user(db, name):
         num_users = db.get_num_users() + 1
         if num_users <= 4:
-            players[str(num_users)] = {
+            db.players[str(num_users)] = {
                 "name"  : name,
                 "score" : 0,
                 "qid"   : [num_users % 4, (num_users+1) % 4]
