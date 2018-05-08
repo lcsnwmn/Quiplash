@@ -146,13 +146,15 @@ function change_state(state){
 		}
 	}
 	xhr.open("PUT",  server_url+"/gamestate", true);
-	var request = '"' + state + '"'
+	var request = '"' + state + '"';
 	//console.log(request)
 	xhr.send(request);
 }
 
 //RETRIEVE QUESTION PROMPT FROM SERVER
 function getPrompt() {
+
+	// Allow 60 seconds for users to submit their answers
 	if (timer == 60){
 		var now = new Date().getTime();
 		goal = now + 60000;
@@ -160,7 +162,7 @@ function getPrompt() {
 	}
 	else if (timer > 0){
 		var curr = new Date().getTime();
-		console.log("G: " + goal + ", C: " + curr)
+		//console.log("G: " + goal + ", C: " + curr)
 		var distance = goal - curr;
 		var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 		console.log(seconds)
@@ -169,7 +171,30 @@ function getPrompt() {
 		document.getElementById("prompt_counter_num").innerHTML = seconds;
 	}
 
+	// For each question, display answers for 15 seconds [...UNTESTED...]
+	for (var i = 1; i <= max_players; i++){
+		var xhr = new XMLHttpRequest();
+		xhr.onload = function (){
+			if (xhr.status = "200") {
+				// Display Question
+				var question = JSON.parse(xhr.responseText)
+				console.log(question)
 
+				var prompt = question["prompt"];
+				console.log(prompt)
+
+				for (var uid in prompt){
+					if (prompt.hasOwnProperty(uid)){
+						var answer = prompt[uid];
+				}
+				
+			}else{
+				console.log("Question display error: " + xhr.status);
+			}
+		}
+		xhr.open("GET", server_url + "/questions/" + i + "/prompt", true);
+		xhr.send();
+	}
 	/*
 	//IF COUNT DOWN HITS ZERO GO TO ANSWERS AFTER PROMPT
 	//BY SENDING 'anwsers' TO GAME STATE TO THEN BE RESEEN BY main.js
