@@ -1,3 +1,47 @@
+
+//STATE TOGGLE, ONLY FOR TESTING
+function toggleStates() {
+	document.getElementById(currentState).className = "inactive";
+	stateIndex = (stateIndex + 1)%4;
+	currentState = states[stateIndex];
+	document.getElementById(currentState).className = "active";
+}
+
+
+//PUT AND GET, ONLY FOR TESTING
+function putTest() {
+	var xhr = new XMLHttpRequest();
+	xhr.open("PUT",  server_url+"/gamestate", true);
+	xhr.onload = function () {
+		if (xhr.status == "200") {
+			console.log("success put");
+		} else {
+			console.error("fail");
+		}
+	}
+	xhr.send('lobby');
+	console.log("sent");
+
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET",  server_url+"/gamestate", true);
+	xhr.onload = function () {var users = JSON.parse(xhr.responseText);
+		if (xhr.status == "200") {
+			console.log("success get");
+			console.log(xhr.responseText);
+		} else {
+			console.error("fail");
+		}
+	}
+	xhr.send();
+	console.log("sent");
+}
+
+
+
+
+
+
+
 function getPlayerName() {
 
 	document.getElementById("test").innerHTML = "Worked";

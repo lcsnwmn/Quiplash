@@ -65,6 +65,16 @@ h1#prompt_counter_num {
 	font-size: 200%;
 	text-align: center;
 }
+div#answers_counter {
+	width: 20%;
+	border-radius: 25px;
+	background: rgba(197,25,25, 0.5);
+   	margin: auto;
+}
+h1#answers_counter_num {
+	font-size: 200%;
+	text-align: center;
+}
 
 /*answers*/
 div#answer1 {

@@ -116,3 +116,9 @@ function setQuestions(q1_num) {
 	xhr.open("GET",  server_url+"/questions", true);
 	xhr.send();
 }
+
+
+
+function
+
+

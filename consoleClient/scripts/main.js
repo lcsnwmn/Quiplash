@@ -1,39 +1,45 @@
 
 
 var states = ["lobby", "prompt", "answers", "tally"];
+var currentState = "lobby";
 var timer_count = 0;
-var currentState = states[1];
-var stateIndex = 0;
 
-var promptRound = 1;
+var round = 1;
 
-var server_url = "http://student01.cse.nd.edu:9898";
 var max_players = 4;
 
+var server_url = "http://student01.cse.nd.edu:9898";
 
-//var intervalID = setInterval(checkStateChange, 1000);
 
-stateFunctions();
+var intervalID = setInterval(checkStateChange, 1000);
+
 
 //GET GAME STATE FROM SERVER AND CHANGE MAIN PAGE TO STATE
 function checkStateChange(){
-//	stateFunctions();//remove
+	
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function() {
 		if (xhr.status == 200) {
-			var gamestate = JSON.parse(xhr.responseText)['message']['gamestate'];
+			
+			//GET GAMESTATE
+			var gamestate = 'prompt';//JSON.parse(xhr.responseText)['message']['gamestate'];
+			//CHECK IF STATE CHANGED
 			if (currentState != gamestate) {
+				
+				//IF STATE CHANGED ASSIGN NEW STATE
+				//RESET TIMER AND SWITCH ACTIVE OF STATES TO MAKE APPEAR AND DISAPEAR
 				timer_count = 0;
 				document.getElementById(currentState).className = "inactive";
 				currentState = gamestate;
 				document.getElementById(currentState).className = "active";
 			}
 			else {
+				//IF STATE NOT CHANGED DO ACTIVITY OF STATE
 				stateFunctions();
 			}
 		}
 		else{
-			stateFunctions();
+			console.log("fail1");
 		}
 	}
 	xhr.open("GET",  server_url+"/gamestate", true);
@@ -42,6 +48,7 @@ function checkStateChange(){
 
 //DEPENDING ON STATE PERFORM FUNCTION FOR STATE
 function stateFunctions() {
+	//GET 'currentState' AND DO ACTION DEPENDING ON THAT
 	if (currentState == "lobby") {
 		lobbyWait();
 	}
@@ -58,25 +65,20 @@ function stateFunctions() {
 
 //CHECK FOR AND GET PLAYERS
 function getPlayers() {
-/*
-	for (var index = 1; index <= max_players; index++) {
-		var pnum = index.toString();
-		document.getElementById("p"+pnum).innerHTML = "pbui";
-	}
-*/
-	//currently only get result text
 	var xhr = new XMLHttpRequest();
 	xhr.onload = function() {
 		if (xhr.status == 200) {
+			
+			//LOOP THROUGH PLAYER INDEXES AND GET PLAYER NAME AND SCORE
 			var players = JSON.parse(xhr.responseText)['message'];
-			for (var index = 1; index <= 4; index++) {
+			for (var index = 1; index <= max_players; index++) {
 				var pnum = index.toString();
 				document.getElementById("p"+pnum).innerHTML = players[pnum]["name"];
 				document.getElementById("s"+pnum).innerHTML = players[pnum]["score"];
 			}
 		}
 		else{
-			
+			console.log("fail2");
 		}
 		
 	}
@@ -85,10 +87,10 @@ function getPlayers() {
 
 }
 
-//WIATING WIDGET
+//WIATING WIDGET (NOT IMPORTANT)
 function lobbyWait() {
 		var currentText = "Waiting for Players.";
-		for (var increment = 0; increment < (timer_count%3); increment++) {
+		for (var increment = 0; increment < (timer_count%max_players); increment++) {
 			currentText = currentText + '.';
 		}
 		document.getElementById("lobby_timer_text").innerHTML = currentText;
@@ -99,16 +101,7 @@ function lobbyWait() {
 //RETRIEVE QUESTION PROMPT FROM SERVER
 function getPrompt() {
 	
-	//temp code
-	/*
-	document.getElementById("question_desc").innerHTML = "Why did the chicken cross the road?";
-	var timer_num = 0;
-	if (timer_count < 60) {
-		timer_num = 60 - timer_count;
-	}
-	document.getElementById("prompt_counter_num").innerHTML = timer_num.toString();
-	timer_count = timer_count + 1;
-	*/
+	//COUNT DOWN FOR QUESTION (PROBABLY NOT NEEDED)
 	var timer_num = 0;
 	if (timer_count < 60) {
 		timer_num = 60 - timer_count;
@@ -116,6 +109,8 @@ function getPrompt() {
 	document.getElementById("prompt_counter_num").innerHTML = timer_num.toString();
 	timer_count = timer_count + 1;
 
+	//IF COUNT DOWN HITS ZERO GO TO ANSWERS AFTER PROMPT
+	//BY SENDING 'anwsers' TO GAME STATE TO THEN BE RESEEN BY main.js
 	if (timer_num <= 0) {
 		var xhr = new XMLHttpRequest();
 		xhr.onload = function () {
@@ -126,14 +121,17 @@ function getPrompt() {
 			}
 		}
 		xhr.open("PUT",  server_url+"/gamestate", true);
-		xhr.send('{"gamestate": "answers"}');
+		xhr.send('answers');
+		console.log('answers')
 	}
+	//DEFAULT STATE, GET QUESTION FROM SERVER TO DISPLAY
+	//USE 'round' TO DETERMINE WHAT QUESTION TO GET
 	else {
 		var xhr = new XMLHttpRequest();
 		xhr.onload = function() {
 			if (xhr.status == 200) {
 				var prompt = JSON.parse(xhr.responseText)['message'];
-				var qnum = promptRound.toString();
+				var qnum = round.toString();
 				document.getElementById("question1_desc").innerHTML = jsonObj['message'][qnum]["prompt"];
 			}
 			else {
@@ -148,6 +146,7 @@ function getPrompt() {
 
 
 function getAnswers() {
+	//LIKE PROMPT COUNT DOWN
 	var timer_num = 0;
 	if (timer_count < 60) {
 		timer_num = 60 - timer_count;
@@ -156,10 +155,14 @@ function getAnswers() {
 	timer_count = timer_count + 1;
 
 
+	//IF TIMER IS DOWN SWITCH STATES, BUT ALSO CHECK AND CHANGE 'round'
+	//IF 'round' REACHES 4 THEN MOVE TO TALLY STATE
 	if (timer_num <= 0) {
-		promptRound = promptRound + 1;
-		if (promptRound > 4) {
-			promptRound = 0;
+		round = round + 1;
+		console.log(round)
+		//IF ROUND IS GREAT THEN MAX OF 4 CHANGE STATE TO TALLY AND RESET 'round'
+		if (round > max_players) {
+			round = 1;
 			var xhr = new XMLHttpRequest();
 			xhr.onload = function () {
 				if (xhr.status == "200") {
@@ -171,6 +174,7 @@ function getAnswers() {
 			xhr.open("PUT",  server_url+"/gamestate", true);
 			xhr.send('tally');
 		}
+		//ELSE CHANGE STATE BACK TO PROMPT WITH NEW INCREMENTED 'round'
 		else {
 			var xhr = new XMLHttpRequest();
 			xhr.onload = function () {
@@ -184,6 +188,7 @@ function getAnswers() {
 			xhr.send('prompt');
 		}
 	}
+	//ELSE IF TIMER IS NOT 0 THEN JUST GET QUESTIONS AND ANSWERS
 	else {
 		var xhr = new XMLHttpRequest();
 		xhr.onload = function() {
@@ -204,53 +209,11 @@ function getAnswers() {
 	xhr.open("GET",  server_url+"/questions", true);
 	xhr.send();
 	}
-	else {
-	}
+
 }
 
 function tallyScore() {
+	//JUST UPDATE PLAYERS AND SCORES FOR NOW...
 	getPlayers();
 }
-
-
-//STATE TOGGLE, ONLY FOR TESTING
-function toggleStates() {
-	document.getElementById(currentState).className = "inactive";
-	stateIndex = (stateIndex + 1)%4;
-	currentState = states[stateIndex];
-	document.getElementById(currentState).className = "active";
-}
-
-
-//PUT AND GET, ONLY FOR TESTING
-function putTest() {
-	var xhr = new XMLHttpRequest();
-	xhr.open("PUT",  server_url+"/gamestate", true);
-	xhr.onload = function () {
-		if (xhr.status == "200") {
-			console.log("success put");
-		} else {
-			console.error("fail");
-		}
-	}
-	xhr.send('lobby');
-	console.log("sent");
-
-	var xhr = new XMLHttpRequest();
-	xhr.open("GET",  server_url+"/gamestate", true);
-	xhr.onload = function () {var users = JSON.parse(xhr.responseText);
-		if (xhr.status == "200") {
-			console.log("success get");
-			console.log(xhr.responseText);
-		} else {
-			console.error("fail");
-		}
-	}
-	xhr.send();
-	console.log("sent");
-}
-
-
-
-
 
