@@ -1,0 +1,79 @@
+html {
+	height: 100%;
+}
+
+body {
+	background-image: url("images/ql_background.jpeg");
+	background-color: #cccccc;
+	height: 1000px;
+}
+
+div#title {
+   	margin: auto;
+	border-radius: 25px;
+	background: rgba(200,0,255, 0.75);
+	width: 40%; 
+}
+
+h3#page_title {
+	color: lime;
+	font-weight:bold;
+	text-indent: 5px;
+	font-size:64px;
+	text-align: center;
+}
+
+div#paragraph {
+	width: 50%;
+	height: 260%;
+	border-radius: 25px;
+	background: rgba(200,0,255, 0.75);
+   	margin: auto;	
+}
+
+h1#paragraph_head {
+	color: orange;
+	padding-left: 40px;
+}
+
+p#paragraph_desc {
+	padding-left: 40px;
+	font-size: 20pt;
+	text-indent: 50px;
+}
+
+p#paragraph_desc_noIndent {
+	padding-left: 40px;
+	font-size: 20pt;
+}
+
+div#images_left {
+	width: 300px;
+	height: 75%;
+	float: left;
+}
+div#images_right {
+	width: 300px;
+	height: 75%;
+	float: right;
+}
+
+img#avatar {
+	height: 300px;
+	width: 300px;
+}
+
+div#fancy_background {
+	width: 95%;
+	height: 14%;
+	border-radius: 25px;
+	background: rgba(25,197,30, 0.75);
+   	margin: auto;
+}
+
+div#link_background {
+	width: 80%;
+	border-radius: 25px;
+	background: rgba(197,25,25, 0.5);
+   	margin: auto;
+}
