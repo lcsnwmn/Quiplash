@@ -9,10 +9,11 @@ class _quiplash_api:
     def load_questions(db, q_file):
         ind = 1
         f = open(q_file, "r")
+        counter = 0
         for i, l in enumerate(f):
-            pass
+            counter = counter + 1
 
-        questions = random.sample(range(1, i+1), 4)
+        questions = random.sample(range(1, counter+1), 4)
 
         for i, question in enumerate(f):
             if i in questions:
