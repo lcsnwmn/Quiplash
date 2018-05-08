@@ -11,16 +11,16 @@ var server_url = "http://student01.cse.nd.edu:9898";
 var max_players = 4;
 
 
-var intervalID = setInterval(checkStateChange, 1000);
+//var intervalID = setInterval(checkStateChange, 1000);
 
-
+stateFunctions();
 
 //GET GAME STATE FROM SERVER AND CHANGE MAIN PAGE TO STATE
 function checkStateChange(){
 //	stateFunctions();//remove
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function() {
-		if (xhr.readyState == 4 && xhr.status == 200 || true) {
+		if (xhr.status == 200) {
 			var gamestate = JSON.parse(xhr.responseText)['message']['gamestate'];
 			if (currentState != gamestate) {
 				timer_count = 0;
@@ -43,14 +43,7 @@ function checkStateChange(){
 //DEPENDING ON STATE PERFORM FUNCTION FOR STATE
 function stateFunctions() {
 	if (currentState == "lobby") {
-		getPlayers();
-		var currentText = "Waiting for Players.";
-		for (var increment = 0; increment < (timer_count%3); increment++) {
-			currentText = currentText + '.';
-		}
-		document.getElementById("lobby_timer_text").innerHTML = currentText;
-		timer_count = timer_count + 1;
-		getPlayers();
+		lobbyWait();
 	}
 	else if (currentState == "prompt") {
 		getPrompt();
@@ -74,7 +67,7 @@ function getPlayers() {
 	//currently only get result text
 	var xhr = new XMLHttpRequest();
 	xhr.onload = function() {
-		if (xhr.readyState == 4 && xhr.status == 200) {
+		if (xhr.status == 200) {
 			var players = JSON.parse(xhr.responseText)['message'];
 			for (var index = 1; index <= 4; index++) {
 				var pnum = index.toString();
@@ -90,6 +83,17 @@ function getPlayers() {
 	xhr.open("GET",  server_url+"/players", true);
 	xhr.send();
 
+}
+
+//WIATING WIDGET
+function lobbyWait() {
+		var currentText = "Waiting for Players.";
+		for (var increment = 0; increment < (timer_count%3); increment++) {
+			currentText = currentText + '.';
+		}
+		document.getElementById("lobby_timer_text").innerHTML = currentText;
+		timer_count = timer_count + 1;
+		getPlayers();
 }
 
 //RETRIEVE QUESTION PROMPT FROM SERVER
@@ -115,7 +119,7 @@ function getPrompt() {
 	if (timer_num <= 0) {
 		var xhr = new XMLHttpRequest();
 		xhr.onload = function () {
-			if (xhr.readyState == 4 && xhr.status == "200") {
+			if (xhr.status == "200") {
 				console.log("success put");
 			} else {
 				console.error("fail");
@@ -127,7 +131,7 @@ function getPrompt() {
 	else {
 		var xhr = new XMLHttpRequest();
 		xhr.onload = function() {
-			if (xhr.readyState == 4 && xhr.status == 200) {
+			if (xhr.status == 200) {
 				var prompt = JSON.parse(xhr.responseText)['message'];
 				var qnum = promptRound.toString();
 				document.getElementById("question1_desc").innerHTML = jsonObj['message'][qnum]["prompt"];
@@ -158,32 +162,32 @@ function getAnswers() {
 			promptRound = 0;
 			var xhr = new XMLHttpRequest();
 			xhr.onload = function () {
-				if (xhr.readyState == 4 && xhr.status == "200") {
+				if (xhr.status == "200") {
 					console.log("success put");
 				} else {
 					console.error("fail");
 				}
 			}
 			xhr.open("PUT",  server_url+"/gamestate", true);
-			xhr.send('{"gamestate": "tally"}');
+			xhr.send('tally');
 		}
 		else {
 			var xhr = new XMLHttpRequest();
 			xhr.onload = function () {
-				if (xhr.readyState == 4 && xhr.status == "200") {
+				if (xhr.status == "200") {
 					console.log("success put");
 				} else {
 					console.error("fail");
 				}
 			}
 			xhr.open("PUT",  server_url+"/gamestate", true);
-			xhr.send('{"gamestate": "prompt"}');
+			xhr.send('prompt');
 		}
 	}
 	else {
 		var xhr = new XMLHttpRequest();
 		xhr.onload = function() {
-		if (xhr.readyState == 4 && xhr.status == 200) {
+		if (xhr.status == 200) {
 			var prompt = JSON.parse(xhr.responseText);
 			document.getElementById("question2_desc").innerHTML = jsonObj['message'][qnum]["prompt"];
 			document.getElementById("answer1_desc").innerHTML = jsonObj['message'][qnum]["answer"];
@@ -220,22 +224,22 @@ function toggleStates() {
 
 //PUT AND GET, ONLY FOR TESTING
 function putTest() {
-	/*var xhr = new XMLHttpRequest();
+	var xhr = new XMLHttpRequest();
 	xhr.open("PUT",  server_url+"/gamestate", true);
 	xhr.onload = function () {
-		if (xhr.readyState == 4 && xhr.status == "200") {
+		if (xhr.status == "200") {
 			console.log("success put");
 		} else {
 			console.error("fail");
 		}
 	}
-	xhr.send('{"gamestate": "lobby"}');
-	console.log("sent");*/
+	xhr.send('lobby');
+	console.log("sent");
 
 	var xhr = new XMLHttpRequest();
 	xhr.open("GET",  server_url+"/gamestate", true);
 	xhr.onload = function () {var users = JSON.parse(xhr.responseText);
-		if (xhr.readyState == 4 && xhr.status == "200") {
+		if (xhr.status == "200") {
 			console.log("success get");
 			console.log(xhr.responseText);
 		} else {

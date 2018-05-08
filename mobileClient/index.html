@@ -16,7 +16,7 @@
 		<div class="answer">
 			<form name="Name">
 				Enter name: <input type="text" name="FirstName" value=""><br>
-				<input type="button" value="Play!" onclick="submitName()">
+				<input id="pname" type="button" value="Play!" onclick="submitName()">
 			</form>
 		</div>
 	</div>
@@ -27,23 +27,23 @@
 
 	<div class="gettinganswers">
 		<!-- Display Question 1 !-->
-		<div id="q1"></div>
+		<div id="q1"><p id="que1"></p></div>
 
 		<!-- Collect Answer 1 !-->
 		<div id="a1">
 			<form name="Answer 1">
 				Answer: <input type="text" name="answer" value=""><br>
-				<input type="button" value="Submit" onclick="submitAnswer()"">
+				<input type="button" value="Submit" onclick="submitAnswer(1)"">
 			</form>
 		</div>
 
 		<!-- Display Question 2 !-->
-		<div id="q2"></div>
+		<div id="q2"><p id="que2"></p></div>
 
 		<!-- Collect Answer 2 !-->
 		<form name="Answer 2">
 			Answer: <input type="text" name="answer" value=""><br>
-			<input type="button" value="Submit" onclick="submitAnswer()"">
+			<input type="button" value="Submit" onclick="submitAnswer(2)"">
 		</form>
 	</div>
 
