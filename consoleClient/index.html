@@ -7,90 +7,97 @@
 <html>
 <body>
 
-<div id="title">
-<center><h3 id="page_title">QuipLash!</h3></center>
-</div>
+	<div id="title">
+	<center><h3 id="page_title">Quiplash!</h3></center>
+	</div>
 
-<!--
-<button type="button"
-onclick="toggleStates()">Test button
-</button>
--->
+	<!--
+	<button type="button"
+	onclick="toggleStates()">Test button
+	</button>
+	-->
 
-<div class="instruct">
-	<h3 class="instruct_title">How to play!</h3>
-	<p class="instruct_text">Welcome to Quiplash where anything can happen!</p>
-</div>
+	<div class="instruct">
+		<h3 class="instruct_title">How to play:</h3>
+		<p class="instruct_text">Welcome to Quiplash where anything can happen! Join the game by going to mfabian.com/quiplash and entering your name.</p>
+	</div>
 
-<div class="player_list">
-	<table class="player_list">
-		<tr class="player_list">
-			<th class="player_list">Player</th>
-			<th class="player_list">Score</th>
-			<th class="player_list">Avatar</th>
-		</tr>
-		<tr>
-			<td class="player_list" id="p1">Example</td>
-			<td class="player_list" id="s1">0</td>
-			<td class="player_list"><img id="avatar" src="images/cube_boy_large.gif" alt="Cube Boy"></td>
-		</tr>
-		<tr>
-			<td class="player_list" id="p2">None</td>
-			<td class="player_list" id="s2">0</td>
-			<td class="player_list"><img id="avatar" src="images/sphere_kid_large.gif" alt="Cube Boy"></td>
-		</tr>
-		<tr>
-			<td class="player_list" id="p3">None</td>
-			<td class="player_list" id="s3">0</td>
-			<td class="player_list"><img id="avatar" src="images/green_thing_large.gif" alt="Cube Boy"></td>
-		</tr>
-		<tr>
-			<td class="player_list" id="p4">None</td>
-			<td class="player_list" id="s4">0</td>
-			<td class="player_list"><img id="avatar" src="images/the_cone_large.gif" alt="Cube Boy"></td>
-		</tr>
-</table>
+	<div class="player_list">
+		<table id="player_table" class="player_list">
+			<tr class="player_list">
+				<th class="player_list">Player</th>
+				<th class="player_list">Score</th>
+				<th class="player_list">Avatar</th>
+			</tr>
+			<!--
+			<tr>
+				<td class="player_list" id="p1">Example</td>
+				<td class="player_list" id="s1">0</td>
+				<td class="player_list"><img id="avatar" src="images/cube_boy_large.gif" alt="Cube Boy"></td>
+			</tr>
+			<tr>
+				<td class="player_list" id="p2">None</td>
+				<td class="player_list" id="s2">0</td>
+				<td class="player_list"><img id="avatar" src="images/sphere_kid_large.gif" alt="Cube Boy"></td>
+			</tr>
+			<tr>
+				<td class="player_list" id="p3">None</td>
+				<td class="player_list" id="s3">0</td>
+				<td class="player_list"><img id="avatar" src="images/green_thing_large.gif" alt="Cube Boy"></td>
+			</tr>
+			<tr>
+				<td class="player_list" id="p4">None</td>
+				<td class="player_list" id="s4">0</td>
+				<td class="player_list"><img id="avatar" src="images/the_cone_large.gif" alt="Cube Boy"></td>
+			</tr>
+		    -->
+		</table>
+	</div>
 
-</div>
+	<div id="lobby" class="inactive">
+		<h3 id="state_title">
+			Lobby
+		</h3>
 
-<div id="lobby" class="active">
-<h3 id="state_title">Lobby</h3>
+		<h4 id="lobby_timer_text">
+			Waiting for Players...
+		</h4>
+	</div>
 
-<h4 id="lobby_timer_text">Waiting for Players</h4>
+	<div id="prompts" class="inactive">
+		<h3 id="state_title">Prompt</h3>
 
-</div>
+		<div id="question">
+			<h4 id="question1_desc">Why did the chicken cross the road?</h4>
+		</div>
+		<div id="prompt_counter">
+			<h1 id="prompt_counter_num">60</h1>
+		</div>
 
-<div id="prompt" class="active">
-<h3 id="state_title">Prompt</h3>
+	</div>
 
-<div id="question">
-<h4 id="question1_desc">Why did the chicken cross the road?</h4>
-</div>
-<div id="prompt_counter">
-<h1 id="prompt_counter_num">60</h1>
-</div>
+	<div id="answers" class="inactive">
+		<h3 id="state_title">Answers</h3>
+		<div id="question">
+			<h4 id="question2_desc">Why did the chicken cross the road?</h4>
+		</div>
+		<div id="answer1">
+			<h4 id="answer1_desc">Grab a burg!</h4>
+		</div>
+		<div id="answer2">
+			<h4 id="answer2_desc">Snatch a taco!</h4>
+		</div>
+		<div id="prompt_counter">
+			<h1 id="answers_counter_num">60</h1>
+		</div>
+	</div>
 
-</div>
+	<div id="tally" class="inactive">
+		<h3 id="state_title">Tally</h3>
+	</div>
 
-<div id="answers" class="active">
-<h3 id="state_title">Answers</h3>
-<div id="question">
-<h4 id="question2_desc">Why did the chicken cross the road?</h4>
-</div>
-<div id="answer1">
-<h4 id="answer1_desc">Grab a burg!</h4>
-</div>
-<div id="answer2">
-<h4 id="answer2_desc">Snatch a taco!</h4>
-</div>
-<div id="prompt_counter">
-<h1 id="answers_counter_num">60</h1>
-</div>
-</div>
-
-<div id="tally" class="active">
-<h3 id="state_title">Tally</h3>
-</div>
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
 
 </body>
 </html>
