@@ -13,6 +13,9 @@ class _quiplash_api:
     def get_quest(db):
         return db.question
 
+    def get_question_id(db, qid):
+        return db.questions[str(qid)]
+
     def load_questions(db, q_file):
         ind = 1
         f = open(q_file, "r")

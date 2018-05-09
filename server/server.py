@@ -125,6 +125,15 @@ class Questions(object):
             output['result'] = str(ex)
         return json.dumps(output)
 
+    def GET_QID(self, qid=0):
+        output = {'result':'success'}
+        try:
+            answer = self.db.get_question_id(qid)
+            return json.dumps(answer)
+        except Exception as ex:
+            output['result'] = ex
+            return json.dumps(output)
+
     def GET_QUESTION(self):
         output = {'result':'success'}
         try:
@@ -177,6 +186,7 @@ def start_service():
 
     # Questions
     dispatcher.connect('questions_get', '/questions/:qid',controller=questions,action = 'GET',conditions=dict(method=['GET']))
+    dispatcher.connect('id_get', '/questions/:qid/prompt',controller=questions,action = 'GET_QID',conditions=dict(method=['GET']))
     dispatcher.connect('answer_get', '/questions/:qid/prompt/:uid',controller=questions,action = 'GET_ANSWER',conditions=dict(method=['GET']))
     dispatcher.connect('answer_put','/questions/:qid/prompt/:uid',controller=questions,action = 'PUT_ANSWER',conditions=dict(method=['PUT']))
     dispatcher.connect('question_get', '/question',controller=questions,action = 'GET_QUESTION',conditions=dict(method=['GET']))
@@ -189,6 +199,7 @@ def start_service():
     dispatcher.connect('options_questions', '/questions', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
     dispatcher.connect('options_questions', '/questions/:qid/prompt/:uid', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
     dispatcher.connect('options_question', '/question', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
+    dispatcher.connect('options_score', '/players/:uid/score', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
 
     conf = {'global': {'server.socket_host':      'student01.cse.nd.edu', 
                        'server.socket_port':      9898},
