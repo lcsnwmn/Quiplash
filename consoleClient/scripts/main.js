@@ -2,8 +2,8 @@
 
 var states = ["lobby", "prompts", "answers", "tally"];
 var currentState = "none";
-var timer = 60;
-var goal = 60;
+var timer = 30;
+var goal = 30;
 
 
 var round = 1;
@@ -59,7 +59,7 @@ function stateFunctions() {
 		getPrompt();
 	}
 	else if (currentState == "answers") {
-		//getAnswers();
+		getAnswers();
 	}
 	else if (currentState == "tally"){
 		//tallyScore();
@@ -155,10 +155,10 @@ function change_state(state){
 function getPrompt() {
 
 	// Allow 60 seconds for users to submit their answers
-	if (timer == 60){
+	if (timer == 30){
 		var now = new Date().getTime();
-		goal = now + 60000;
-		timer = 59;
+		goal = now + 30000;
+		timer = 29;
 	}
 	else if (timer > 0){
 		var curr = new Date().getTime();
@@ -169,68 +169,87 @@ function getPrompt() {
 		timer = seconds - 1;
 		//console.log(timer);
 		document.getElementById("prompt_counter_num").innerHTML = seconds;
+	}else if (timer <= 0){
+		change_state("answers");
+		next();
 	}
+}
 
-	// For each question, display answers for 15 seconds [...UNTESTED...]
-	for (var i = 1; i <= max_players; i++){
-		var xhr = new XMLHttpRequest();
-		xhr.onload = function (){
-			if(xhr.status == "200"){
-				// Display Question
-				var question = JSON.parse(xhr.responseText)
-				console.log(question)
+function getAnswers(){
+	// For each question, display answers for 15 seconds
+	var ans_time = document.getElementById("answers_counter_num");
 
-				var prompt = question["prompt"];
-				console.log(prompt)
-
-				for (var uid in prompt){
-					if (prompt.hasOwnProperty(uid)){
-						var answer = prompt[uid];
-					}
-				}
-				
-			}else{
-				console.log("Question display error: " + xhr.status);
-			}
-		}
-		xhr.open("GET", server_url + "/questions/" + i + "/prompt", true);
-		xhr.send();
-	}
-	/*
-	//IF COUNT DOWN HITS ZERO GO TO ANSWERS AFTER PROMPT
-	//BY SENDING 'anwsers' TO GAME STATE TO THEN BE RESEEN BY main.js
-	if (timer_num <= 0) {
+}
+function next(){
+	if(round <= 4){
 		var xhr = new XMLHttpRequest();
 		xhr.onload = function () {
 			if (xhr.status == "200") {
-				console.log("success put");
-			} else {
-				console.error("fail");
+				displayQuestion(round);
+				console.log(round);
+				round = round + 1;
 			}
 		}
-		xhr.open("PUT",  server_url+"/gamestate", true);
-		xhr.send('answers');
-		console.log('answers')
+		xhr.open("PUT",  server_url+"/question", true);
+		//console.log(request)
+		xhr.send(round);
+	}else{
+		change_state("tally");
 	}
-	//DEFAULT STATE, GET QUESTION FROM SERVER TO DISPLAY
-	//USE 'round' TO DETERMINE WHAT QUESTION TO GET
-	else {
-		var xhr = new XMLHttpRequest();
-		xhr.onload = function() {
-			if (xhr.status == 200) {
-				var prompt = JSON.parse(xhr.responseText)['message'];
-				var qnum = round.toString();
-				document.getElementById("question1_desc").innerHTML = jsonObj['message'][qnum]["prompt"];
+
+}
+
+function displayQuestion(qid){
+	var xhr = new XMLHttpRequest();
+	xhr.onload = function (qid){
+		if(xhr.status == "200"){
+			// Display Question
+			var question = JSON.parse(xhr.responseText)["question"]
+			var display = document.getElementById("question2_desc");
+			display.innerHTML = question;
+
+			if(qid = 1){
+				var user = 4;
+			}else{
+				var user = qid - 1;
 			}
-			else {
-				document.getElementById("question1_desc").innerHTML = "Huston we have a problem...";
-			}
-		
+			console.log("DQ: " + qid + " " + user);
+			displayAnswers(String(qid), String(qid));
+			displayAnswers(String(qid), String(user));
+			
+		}else{
+			console.log("Question display error: " + xhr.status);
 		}
-		xhr.open("GET",  server_url+"/questions", true);
-		xhr.send();
 	}
-	*/
+	xhr.open("GET", server_url + "/questions/" + qid, true);
+	xhr.send();
+}
+
+function displayAnswers(qid, user){
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", server_url + "/questions/" + user + "/prompt/" + qid, true);
+	xhr.onload = function (){
+		if(xhr.status == "200"){
+			// Display Question
+			console.log(xhr.responseText);
+			console.log(user + " " + qid);
+			var answer = JSON.parse(xhr.responseText)["result"]
+			if(qid == user){
+				var display = document.getElementById("answer1_desc");
+			}else{
+				var display = document.getElementById("answer2_desc");
+			}
+
+			if (answer.length < 1){
+				answer = "No Answer :("
+			}
+			display.innerHTML = answer;
+
+		}else{
+			console.log("Question display error: " + xhr.status);
+		}
+	}
+	xhr.send();
 }
 
 /*

@@ -98,7 +98,7 @@ function stateFunctions() {
 		getPrompts();
 	}
 	else if (currentState == "answers") {
-		//getAnswers();
+		getAnswers();
 	}
 	else if (currentState == "tally"){
 		//tallyScore();
@@ -108,164 +108,133 @@ function stateFunctions() {
 }
 
 function getPrompts(){
+	if (uid != "0"){
+		var xhr = new XMLHttpRequest();
+		xhr.onload = function (){
+			if(xhr.status == "200"){
+				// Display Question
+				var question = JSON.parse(xhr.responseText)["question"];
+				console.log(question);
+				var resp = document.getElementById("que1");
+				resp.innerHTML = question;
+
+				var xhr2 = new XMLHttpRequest();
+				xhr2.onload = function (){
+					if(xhr2.status == "200"){
+						// Display Question
+						var question = JSON.parse(xhr2.responseText)["question"];
+						console.log(question);
+						var resp = document.getElementById("que2");
+						resp.innerHTML = question;
+					}else{
+						console.log("Question display error: " + xhr2.status);
+					}
+				}
+				if (uid != "1"){
+					var qid2 = String(parseInt(uid) - 1);
+				}else{
+					var qid2 = "4";
+				}
+				
+				xhr2.open("GET", server_url + "/questions/" + qid2, true);
+				xhr2.send();
+
+			}else{
+				console.log("Question display error: " + xhr.status);
+			}
+		}
+		var qid1 = uid;
+		xhr.open("GET", server_url + "/questions/" + qid1, true);
+		xhr.send();
+
+
+	}
+}
+
+function submitAnswer(qid){
+	var newForm = document.getElementById("A1");
+	if (qid == 1){
+		qid = uid
+		document.getElementById("first").className = "inactive";
+		document.getElementById("second").className = "active";
+	}else{
+		if (uid != "1"){
+			var qid2 = String(parseInt(uid) - 1);
+		}else{
+			var qid2 = "4";
+		}
+		newForm = document.getElementById("A2");
+		document.getElementById("second").className = "inactive";
+	}
+	console.log(newForm);
+	var answer = newForm.elements[0].value;
+
+	var xhr = new XMLHttpRequest();
+	xhr.onload = function () {
+		if (xhr.status == "200") {
+			console.log("Answer submitted:" + answer);
+		} else {
+			console.error("Answer Error (" + answer + "): " + xhr.status);
+		}
+	}
+	xhr.open("PUT",  server_url+"/questions/" + qid + "/prompt/" + uid, true);
+	var request = '"' + answer + '"';
+	//console.log(request)
+	xhr.send(request);
+}
+
+function getAnswers(){
 	var xhr = new XMLHttpRequest();
 	xhr.onload = function (){
 		if(xhr.status == "200"){
 			// Display Question
-			var question = JSON.parse(xhr.responseText)
-			console.log(question)
-
-			var prompt = question["prompt"];
-			console.log(prompt)
-
-			for (var uid in prompt){
-				if (prompt.hasOwnProperty(uid)){
-					var answer = prompt[uid];
-				}
+			var question = JSON.parse(xhr.responseText)["result"];
+			if(question == "1"){
+				var user = "4";
+			}else{
+				var user = String(parseInt(question) - 1);
 			}
+			//console.log("DQ: " + qid + " " + user);
+			displayAnswers(question, question);
+			displayAnswers(question, user);
 			
 		}else{
 			console.log("Question display error: " + xhr.status);
 		}
 	}
-	var qid1 = String((Int(uid) % 4)+1)
-	xhr.open("GET", server_url + "/questions/" + qid1 + "/answers/" + uid, true);
+	xhr.open("GET", server_url + "/question", true);
 	xhr.send();
-	var question = document.getElementById("que1")
 }
 
-/*
-//SUBMIT PLAYER NAME
-function submitName() {
-	
-	//HOLDER VALUES TO BE APPLIED TO USER
-	var extention = 0;
-	var temp_qid = [];
-	
-	//CHECK IF PLAYER VARIABLES ARE ALL READY SET IN INSTANCE
-	if (player_name == "NONE" && player_num == 0) {
-		
-		//GET PLAYER INFO FROM SERVER
-		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function() {
-			if (xhr.status == 200){
-				
-				//GO THROUGH EACH USER NAME AND FIND ONE NOT SET ie 'NONE'
-				//ASSIGN 'extension' PLAYER INDEX IF NAME IS 'NONE'
-				var playerOb = JSON.parse(xhr.responseText)['message'];
-				for (var increment = 1; increment <= max_players; increment++) {
-					var uname = playerOb[increment.toString()]['name'];
-					if (uname == 'NONE') {
-						extention = increment;
-						temp_qid = playerOb['qid'];
-						break;
-					}
-				}
-			} else {
-				console.error("fail1");
-			}
-		}
-		xhr.open("GET",  server_url+"/players", true);
-		xhr.send();
-		
-		//GET NEW NAME 'pname' FROM HTML FORM AND PUT TO SERVER
-		var xhr = new XMLHttpRequest();
-		xhr.open("PUT",  server_url+"/players/"+extention.toString()+"/name", true);
-		var pname = document.getElementById('pname').value;
-		xhr.onreadystatechange = function(){
-			if (xhr.status == 200){
-				console.log("success put");
-				player_name = pname;
-				player_num = extention;
-				player_qid = temp_qid;
-				//SET QUESTIONS GETS CALLED HERE
-				setQuestions(1);
-				setQuestions(2);
-			} else {
-				console.error("fail2");
-			}
-		}
-		xhr.send();
-		
-	}
-
-}
-
-//SUBMIT ANSWERS USING 'ans_type' AS REFERENCE TO ANSWER FIELD
-function submitAnswer(ans_type) {
-	
-	//CHECK IF PLAYER VARIABLES ARE SET
-	if (player_name != "NONE" && player_num != 0) {
-		
-			//DEPENDING ON 'ans_type' SET SERVER ADDRESS VARIABLES WITH 'player_qid' ARRAY
-			var uid = "NONE";
-			var q1_num = 0;
-			if (ans_type == 1 && q1_submit == false) {
-				uid = "uid";
-				q1_num = player_qid[0];
-				q1_submit = true;
-			}
-			if (ans_type == 2 && q2_submit == false) {
-				uid = "uid2";
-				q1_num = player_qid[1];
-				q2_submit = true;
-			}
-			
-			//IF ANSWERS NOT ALREADY SUBMITTED SUBMIT ANSWERS
-			if (uid != "NONE" && q1_num != 0) {
-				var xhr = new XMLHttpRequest();
-				xhr.open("PUT",  server_url+"/questions/"+q1_num.toString()+"/answers/"+uid, true);
-				var pname = document.getElementById('pname').value;
-				xhr.onreadystatechange = function(){
-					if (xhr.status == 200){
-						console.log("success put");
-					} else {
-						console.error("fail3");
-					}
-				}
-				xhr.send();
-			}
-	}
-}
-
-//RETRIEVE QUESTION FROM SERVER
-//USE 'q1_num' TO DESIGNATE PLAYER QID INDEX
-function setQuestions(q1_num) {
+function displayAnswers(qid, user){
 	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function() {
-		if (xhr.status == 200){
-			var question = JSON.parse(xhr.responseText)['message'][player_qid[q1_num-1].toString()]['prompt'];
-			//SET TO HTML
-			document.getElementById('que'+q1_num.toString()).innerHTML = question;
-		} else {
-			console.error("fail4");
+	xhr.open("GET", server_url + "/questions/" + user + "/prompt/" + qid, true);
+	xhr.onload = function (){
+		if(xhr.status == "200"){
+			// Display Question
+			console.log(xhr.responseText);
+			console.log(user + " " + qid);
+			var answer = JSON.parse(xhr.responseText)["result"]
+			if(qid == user){
+				var display = document.getElementById("a1");
+				var i = 1;
+			}else{
+				var display = document.getElementById("a2");
+				var i = 2;
+			}
+
+			if (answer.length < 1){
+				answer = "No Answer :("
+			}
+			display.innerHTML = '<button type="button" onclick="choose(' + i + ')">' + answer + '</button>';
+
+		}else{
+			console.log("Question display error: " + xhr.status);
 		}
 	}
-	xhr.open("GET",  server_url+"/questions", true);
 	xhr.send();
 }
 
-
-//GET QUESTIONS AND ANSWERS WHEN AVAILABLE
-//VARIABLE 'q2_num' SPECFICIES WHICH QUESTION FROM SERVER INDEX
-function checkQuestionAnswers(q2_num) {
-	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function() {
-		if (xhr.status == 200){
-			var questionObj = JSON.parse(xhr.responseText)['message'][q2_num.toString()];
-			var question = questionObj['prompt'];
-			var answer = questionObj['answer'];
-			var answer2 = questionObj['answer2'];
-			//SET TO HTML
-			document.getElementById('que3').innerHTML = question;
-			document.getElementById('ans1').innerHTML = answer;
-			document.getElementById('ans1').innerHTML = answer2;
-		} else {
-			console.error("fail4");
-		}
-	}
-	xhr.open("GET",  server_url+"/questions", true);
-	xhr.send();
+function choose(qid){
+	console.log("Made it.");
 }
-
-*/
