@@ -152,51 +152,65 @@ function getPrompts(){
 }
 
 function submitAnswer(qid){
-	var newForm = document.getElementById("A1");
+
 	if (qid == 1){
-		qid = uid
+		qid = uid;
 		document.getElementById("first").className = "inactive";
 		document.getElementById("second").className = "active";
+		
+		var newForm = document.getElementById("A1");
+		var answer = newForm.elements[0].value;
+		var xhr = new XMLHttpRequest();
+		xhr.onload = function () {
+			if (xhr.status == "200") {
+				console.log("Answer submitted:" + answer);
+			} else {
+				console.error("Answer Error (" + answer + "): " + xhr.status);
+			}
+		}
+		xhr.open("PUT",  server_url+"/questions/" + qid + "/prompt/" + uid, true);
+		var request = '"' + answer + '"';
+		//console.log(request)
+		xhr.send(request);
 	}else{
 		if (uid != "1"){
 			var qid2 = String(parseInt(uid) - 1);
 		}else{
 			var qid2 = "4";
 		}
-		newForm = document.getElementById("A2");
 		document.getElementById("second").className = "inactive";
+		
+		var newForm = document.getElementById("A2");
+		var answer = newForm.elements[0].value;
+		
+		var xhr = new XMLHttpRequest();
+		xhr.onload = function () {
+			if (xhr.status == "200") {
+				console.log("Answer submitted:" + answer);
+			} else {
+				console.error("Answer Error (" + answer + "): " + xhr.status);
+			}
+		}
+		xhr.open("PUT",  server_url+"/questions/" + qid2 + "/prompt/" + uid, true);
+		var request = '"' + answer + '"';
+		//console.log(request)
+		xhr.send(request);
 	}
 	console.log(newForm);
-	var answer = newForm.elements[0].value;
 
-	var xhr = new XMLHttpRequest();
-	xhr.onload = function () {
-		if (xhr.status == "200") {
-			console.log("Answer submitted:" + answer);
-		} else {
-			console.error("Answer Error (" + answer + "): " + xhr.status);
-		}
-	}
-	xhr.open("PUT",  server_url+"/questions/" + qid + "/prompt/" + uid, true);
-	var request = '"' + answer + '"';
-	//console.log(request)
-	xhr.send(request);
+
+
 }
 
 function getAnswers(){
+	console.log("Getting...");
 	var xhr = new XMLHttpRequest();
 	xhr.onload = function (){
 		if(xhr.status == "200"){
 			// Display Question
 			var question = JSON.parse(xhr.responseText)["result"];
-			if(question == "1"){
-				var user = "4";
-			}else{
-				var user = String(parseInt(question) - 1);
-			}
 			//console.log("DQ: " + qid + " " + user);
-			displayAnswers(question, question);
-			displayAnswers(question, user);
+			displayAnswers(question);
 			
 		}else{
 			console.log("Question display error: " + xhr.status);
@@ -206,35 +220,79 @@ function getAnswers(){
 	xhr.send();
 }
 
-function displayAnswers(qid, user){
+function displayAnswers(qid){
 	var xhr = new XMLHttpRequest();
-	xhr.open("GET", server_url + "/questions/" + user + "/prompt/" + qid, true);
 	xhr.onload = function (){
 		if(xhr.status == "200"){
 			// Display Question
 			console.log(xhr.responseText);
-			console.log(user + " " + qid);
-			var answer = JSON.parse(xhr.responseText)["result"]
-			if(qid == user){
-				var display = document.getElementById("a1");
-				var i = 1;
-			}else{
-				var display = document.getElementById("a2");
-				var i = 2;
-			}
 
-			if (answer.length < 1){
-				answer = "No Answer :("
-			}
-			display.innerHTML = '<button type="button" onclick="choose(' + i + ')">' + answer + '</button>';
+			var answer = JSON.parse(xhr.responseText)["answers"]
 
+			//var flag = 1;
+			for (var key in answer) {
+				if (answer.hasOwnProperty(key)) {
+					console.log(answer[key])
+					var button = document.createElement("button");
+					button.innerHTML = answer[key];
+					var body = document.getElementById("answers");
+					body.appendChild(button);
+					button.addEventListener("click", choose(key));
+					// if (flag == 1){
+					// 	flag = 2;
+					// 	var display = document.getElementById("a1");
+					// 	if (answer.length < 1){
+					// 		answer = "No Answer :(";
+					// 	}
+					// 	display.innerHTML = '<button type="button" onclick="choose(2)">' + answer[key] + '</button>';
+					// }else{
+					// 	var display = document.getElementById("a2");
+					// 	if (answer.length < 1){
+					// 		answer = "No Answer :(";
+					// 	}
+					// 	display.innerHTML = '<button type="button" onclick="choose(1)">' + answer[key] + '</button>';
+					// }
+				}
+			}
 		}else{
 			console.log("Question display error: " + xhr.status);
 		}
 	}
+	xhr.open("GET", server_url + "/questions/" + qid + "/prompt", true);
 	xhr.send();
 }
 
-function choose(qid){
+function choose(choice){
 	console.log("Made it.");
+	console.log(choice);
+	var xhr = new XMLHttpRequest();
+	xhr.onload = function (){
+		if(xhr.status == "200"){
+			// Display Question
+			var score = JSON.parse(xhr.responseText)["score"];
+			console.log(score);
+			score = score + 100;
+
+			put_score(score, choice);
+			
+		}else{
+			console.log("Question display error: " + xhr.status);
+		}
+	}
+	xhr.open("GET", server_url + "/players/" + choice + "/score", true);
+	xhr.send();
+}
+
+function put_score(score,uid){
+	var xhr = new XMLHttpRequest();
+	xhr.onload = function () {
+		if (xhr.status == "200") {
+			console.log("Score submitted:" + score);
+		} else {
+			console.error("Score Error (" + score + "): " + xhr.status);
+		}
+	}
+	xhr.open("PUT",  server_url+"/players/" + uid + "/score", false);
+	//console.log(request)
+	xhr.send(score);
 }

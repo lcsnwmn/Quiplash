@@ -92,7 +92,7 @@ function getPlayers() {
 							var cell2=row.insertCell(1);
 							var cell3=row.insertCell(2);
 							cell1.innerHTML=players[pnum]
-							cell2.innerHTML=0
+							cell2.innerHTML="?"
 							if (pnum == "0"){
 								cell3.innerHTML = '<img id="avatar" src="images/cube_boy_large.gif" alt="Cube Boy">'
 							}else if (pnum == "1"){
@@ -176,10 +176,9 @@ function getPrompt() {
 }
 
 function getAnswers(){
-	// For each question, display answers for 15 seconds
 	var ans_time = document.getElementById("answers_counter_num");
-
 }
+
 function next(){
 	if(round <= 4){
 		var xhr = new XMLHttpRequest();
@@ -200,18 +199,19 @@ function next(){
 }
 
 function displayQuestion(qid){
+	console.log("ENTER DISPLAY:" + qid);
 	var xhr = new XMLHttpRequest();
-	xhr.onload = function (qid){
+	xhr.onload = function (){
 		if(xhr.status == "200"){
 			// Display Question
 			var question = JSON.parse(xhr.responseText)["question"]
 			var display = document.getElementById("question2_desc");
 			display.innerHTML = question;
 
-			if(qid = 1){
-				var user = 4;
+			if(qid == 4){
+				var user = 1;
 			}else{
-				var user = qid - 1;
+				var user = qid + 1;
 			}
 			console.log("DQ: " + qid + " " + user);
 			displayAnswers(String(qid), String(qid));
@@ -226,8 +226,9 @@ function displayQuestion(qid){
 }
 
 function displayAnswers(qid, user){
+	console.log("TEST HERE:::: " + user);
 	var xhr = new XMLHttpRequest();
-	xhr.open("GET", server_url + "/questions/" + user + "/prompt/" + qid, true);
+	xhr.open("GET", server_url + "/questions/" + qid + "/prompt/" + user, true);
 	xhr.onload = function (){
 		if(xhr.status == "200"){
 			// Display Question
@@ -251,78 +252,3 @@ function displayAnswers(qid, user){
 	}
 	xhr.send();
 }
-
-/*
-function getAnswers() {
-	//LIKE PROMPT COUNT DOWN
-	var timer_num = 0;
-	if (timer_count < 60) {
-		timer_num = 60 - timer_count;
-	}
-	document.getElementById("answers_counter_num").innerHTML = timer_num.toString();
-	timer_count = timer_count + 1;
-
-
-	//IF TIMER IS DOWN SWITCH STATES, BUT ALSO CHECK AND CHANGE 'round'
-	//IF 'round' REACHES 4 THEN MOVE TO TALLY STATE
-	if (timer_num <= 0) {
-		round = round + 1;
-		console.log(round)
-		//IF ROUND IS GREAT THEN MAX OF 4 CHANGE STATE TO TALLY AND RESET 'round'
-		if (round > max_players) {
-			round = 1;
-			var xhr = new XMLHttpRequest();
-			xhr.onload = function () {
-				if (xhr.status == "200") {
-					console.log("success put");
-				} else {
-					console.error("fail");
-				}
-			}
-			xhr.open("PUT",  server_url+"/gamestate", true);
-			xhr.send('tally');
-		}
-		//ELSE CHANGE STATE BACK TO PROMPT WITH NEW INCREMENTED 'round'
-		else {
-			var xhr = new XMLHttpRequest();
-			xhr.onload = function () {
-				if (xhr.status == "200") {
-					console.log("success put");
-				} else {
-					console.error("fail");
-				}
-			}
-			xhr.open("PUT",  server_url+"/gamestate", true);
-			xhr.send('prompt');
-		}
-	}
-	//ELSE IF TIMER IS NOT 0 THEN JUST GET QUESTIONS AND ANSWERS
-	else {
-		var xhr = new XMLHttpRequest();
-		xhr.onload = function() {
-		if (xhr.status == 200) {
-			var prompt = JSON.parse(xhr.responseText);
-			document.getElementById("question2_desc").innerHTML = jsonObj['message'][qnum]["prompt"];
-			document.getElementById("answer1_desc").innerHTML = jsonObj['message'][qnum]["answer"];
-			document.getElementById("answer2_desc").innerHTML = jsonObj['message'][qnum]["answer2"];
-
-		}
-		else {
-			document.getElementById("question2_desc").innerHTML = "Huston we have a problem...";
-			document.getElementById("answer1_desc").innerHTML = "Huston we have a problem...";
-			document.getElementById("answer2_desc").innerHTML = "Huston we have a problem...";
-		}
-		
-	}
-	xhr.open("GET",  server_url+"/questions", true);
-	xhr.send();
-	}
-
-}
-
-function tallyScore() {
-	//JUST UPDATE PLAYERS AND SCORES FOR NOW...
-	getPlayers();
-}
-
-*/
