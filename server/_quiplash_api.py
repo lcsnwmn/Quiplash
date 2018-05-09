@@ -50,6 +50,9 @@ class _quiplash_api:
             users.append(db.players[str(user+1)]["name"])
         return users
 
+    def get_user(db, uid):
+        return db.players[str(uid)]["name"]
+
     def get_answer(db, qid, uid):
         return db.questions[str(qid)][str(uid)]
 
