@@ -109,7 +109,7 @@ class Questions(object):
         output = {'result':'success'}
         try:
             answer = self.db.get_answer(qid,uid)
-            output["answer"] = answer
+            output['result'] = answer
             return json.dumps(output)
         except Exception as ex:
             output['result'] = ex
@@ -121,6 +121,26 @@ class Questions(object):
         answer = json.loads(cherrypy.request.body.read())
         try:
             output = self.db.set_answer(qid, uid, answer)
+        except Exception as ex:
+            output['result'] = str(ex)
+        return json.dumps(output)
+
+    def GET_QUESTION(self):
+        output = {'result':'success'}
+        try:
+            answer = self.db.get_quest()
+            output['result'] = answer
+            return json.dumps(output)
+        except Exception as ex:
+            output['result'] = ex
+            return json.dumps(output)
+
+    # Put Answer /question
+    def PUT_QUESTION(self):
+        output = {'result':'success'}
+        answer = json.loads(cherrypy.request.body.read())
+        try:
+            output = self.db.set_quest(answer)
         except Exception as ex:
             output['result'] = str(ex)
         return json.dumps(output)
@@ -159,12 +179,16 @@ def start_service():
     dispatcher.connect('questions_get', '/questions/:qid',controller=questions,action = 'GET',conditions=dict(method=['GET']))
     dispatcher.connect('answer_get', '/questions/:qid/prompt/:uid',controller=questions,action = 'GET_ANSWER',conditions=dict(method=['GET']))
     dispatcher.connect('answer_put','/questions/:qid/prompt/:uid',controller=questions,action = 'PUT_ANSWER',conditions=dict(method=['PUT']))
+    dispatcher.connect('question_get', '/question',controller=questions,action = 'GET_QUESTION',conditions=dict(method=['GET']))
+    dispatcher.connect('question_put','/question',controller=questions,action = 'PUT_QUESTION',conditions=dict(method=['PUT']))
 
 
     dispatcher.connect('options_gamestate', '/gamestate', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
     dispatcher.connect('options_player', '/players', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
     dispatcher.connect('options_players', '/players/:id', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
     dispatcher.connect('options_questions', '/questions', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
+    dispatcher.connect('options_questions', '/questions/:qid/prompt/:uid', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
+    dispatcher.connect('options_question', '/question', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
 
     conf = {'global': {'server.socket_host':      'student01.cse.nd.edu', 
                        'server.socket_port':      9898},

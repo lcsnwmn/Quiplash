@@ -4,7 +4,14 @@ class _quiplash_api:
     def __init__(self):
         self.players = {}
         self.gamestate = "Null"
+        self.question = 0
         self.questions = {}
+
+    def set_quest(db, number):
+        db.question = number
+
+    def get_quest(db):
+        return db.question
 
     def load_questions(db, q_file):
         ind = 1
@@ -54,10 +61,12 @@ class _quiplash_api:
         return db.players[str(uid)]["name"]
 
     def get_answer(db, qid, uid):
-        return db.questions[str(qid)][str(uid)]
+        print db.questions[str(qid)]["answers"]
+        print str(uid)
+        return db.questions[str(qid)]["answers"][str(uid)]
 
     def set_answer(db, qid, uid, answer):
-        db.questions[str(qid)][str(uid)] = answer
+        db.questions[str(qid)]["answers"][str(uid)] = answer
 
     def get_gamestate(db):
         if db.gamestate != "Null":
