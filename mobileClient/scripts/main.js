@@ -6,12 +6,135 @@ var player_qid = [-1, -1];
 var q1_submit = false;
 var q2_submit = false;
 
+
+var currentState = "none";
+var uid = "0";
+var name = "undefined"
+
 var buttonsEnabled = true;
 
-var intervalID = setInterval(checkQuestionAnswers, 1000);
+var intervalID = setInterval(getState, 1000);
 
-//THE WAY ITS SET UP A USER SHOULD NOT REFRESH PAGE OR ELSE ALL VARIABLES ARE RESET
+function getState(){
+	
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function() {
+		if ((xhr.status == 200)&&(xhr.responseText != null)) {
+			//console.log(xhr.responseText)
+			
+			//GET GAMESTATE
+			var gamestate = JSON.parse(xhr.responseText)["result"]
+			//CHECK IF STATE CHANGED
+			if (currentState != gamestate) {
+				if (gamestate != "error"){
+					//IF STATE CHANGED MAKE VISIBLE
+					if (currentState != "none"){
+						document.getElementById(currentState).className = "inactive";
+					}
+					document.getElementById(gamestate).className = "active";
+					currentState = gamestate;
+					stateFunctions();
+				}
+			}
+			// else {
+			// 	//IF STATE NOT CHANGED DO ACTIVITY OF STATE
+			// 	stateFunctions();
+			// }
+		}
+		else if (xhr.status != 0){
+			console.log("Gamestate Error:" + xhr.status);
+		}
+	}
+	xhr.open("GET",  server_url+"/gamestate", false);
+	xhr.send();
+}
 
+function submitName(){
+
+
+	var xhr = new XMLHttpRequest();
+	xhr.onload = function(){
+		if((xhr.status == "200")&&(uid=="0")){
+
+			console.log(JSON.parse(xhr.responseText));
+			var result = JSON.parse(xhr.responseText);
+			uid = String(Object.keys(result).length);
+			if(Object.keys(result).length < 5){
+				var myForm = document.getElementById("myForm");
+				console.log("FORM:" + myForm);
+				name = myForm.elements[0].value;
+				submitToServer(uid, name);
+			}
+
+
+		}
+	}
+	xhr.open("GET", server_url + "/players", true);
+	xhr.send();
+	
+}
+
+function submitToServer(user, name){
+	var xhr = new XMLHttpRequest();
+	xhr.onload = function () {
+		if (xhr.status == "200") {
+			console.log("Name submitted:" + name);
+		} else {
+			console.error("Name Error (" + name + "): " + xhr.status);
+		}
+	}
+	xhr.open("PUT",  server_url+"/players/" + user, true);
+	var request = '"' + name + '"';
+	//console.log(request)
+	xhr.send(request);
+}
+
+function stateFunctions() {
+	//GET 'currentState' AND DO ACTION DEPENDING ON THAT
+	if (currentState == "lobby") {
+		//lobbyWait();
+	}
+	else if (currentState == "prompts") {
+		getPrompts();
+	}
+	else if (currentState == "answers") {
+		//getAnswers();
+	}
+	else if (currentState == "tally"){
+		//tallyScore();
+	}else{
+		//console.log("Error with current state: current state is " + currentState)
+	}
+}
+
+function getPrompts(){
+	var xhr = new XMLHttpRequest();
+	xhr.onload = function (){
+		if(xhr.status == "200"){
+			// Display Question
+			var question = JSON.parse(xhr.responseText)
+			console.log(question)
+
+			var prompt = question["prompt"];
+			console.log(prompt)
+
+			for (var uid in prompt){
+				if (prompt.hasOwnProperty(uid)){
+					var answer = prompt[uid];
+				}
+			}
+			
+		}else{
+			console.log("Question display error: " + xhr.status);
+		}
+	}
+	var qid1 = String((Int(uid) % 4)+1)
+	xhr.open("GET", server_url + "/questions/" + qid1 + "/answers/" + uid, true);
+	xhr.send();
+	var question = document.getElementById("que1")
+}
+
+/*
 //SUBMIT PLAYER NAME
 function submitName() {
 	
@@ -145,4 +268,4 @@ function checkQuestionAnswers(q2_num) {
 	xhr.send();
 }
 
-
+*/

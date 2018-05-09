@@ -14,3 +14,13 @@ div {
 	background: rgba(200,0,255, 0.75);
    	/*margin: auto;*/
 }
+
+div.active {
+	width: 90%;
+	border-radius: 25px;
+	background: rgba(200,0,255, 0.75);
+   	margin: auto;
+}
+div.inactive {
+	display: none;
+}
