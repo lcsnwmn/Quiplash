@@ -44,6 +44,11 @@ div.inactive {
 	display: none;
 }
 
+h4#lobby_timer_text {
+	font-size: 16pt;
+	text-indent: 20px;
+}
+
 /*prompt*/
 div#question {
 	width: 50%;
@@ -52,8 +57,10 @@ div#question {
 	background: rgba(25,197,30, 0.75);
    	margin: auto;
 }
-h4#question_desc {
+h4#question1_desc {
+	font-size: 16pt;
 	text-align: center;
+	transform: translateY(100%); 
 }
 div#prompt_counter {
 	width: 20%;
@@ -77,18 +84,40 @@ h1#answers_counter_num {
 }
 
 /*answers*/
+h4#question2_desc {
+	font-size: 16pt;
+	text-align: center;
+	transform: translateY(100%); 
+}
+div#answers_tab {
+	margin: auto;
+	width: 75%;
+}
 div#answer1 {
 	float: left;
 	border-radius: 25px;
+	width: 50%;
 	background: rgba(197,25,25, 0.5);
+	
 }
 div#answer2 {
-
    	float: right;
 	border-radius: 25px;
+	width: 50%;
 	background: rgba(197,25,25, 0.5);
 }
-
+h4#answer1_desc {
+	text-align: center;
+}
+h4#answer2_desc {
+	text-align: center;
+}
+div#answer_counter {
+	width: 20%;
+	border-radius: 25px;
+	background: rgba(197,25,25, 0.5);
+   	margin: auto;
+}
 
 
 /*Player table and Avatars*/
