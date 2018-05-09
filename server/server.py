@@ -48,6 +48,18 @@ class Players(object):
                 output[str(i)] = user
         return json.dumps(output)
 
+    # Get Player Names at /players/:uid
+    def GET_PLAYER(self, uid):
+        output = {'result':'success'}
+        try:
+            user = self.db.get_user(uid)
+            output['result'] = user
+            return json.dumps(output)
+        except Exception as ex:
+            output['result'] = "Error: No users"
+            return json.dumps(output)
+
+
     #PUT for /players/:id
     def PUT(self, id=0):
         output = {'result':'success'}
@@ -91,7 +103,7 @@ class Questions(object):
             output['question'] = question
         except Exception as ex:
             output['result'] = "Error: question not found"
-            return json.dumps(output)
+        return json.dumps(output)
 
     def GET_ANSWER(self, qid=0, uid=0):
         output = {'result':'success'}
@@ -138,18 +150,20 @@ def start_service():
 
     # Players
     dispatcher.connect('players_get', '/players',controller=players,action = 'GET',conditions=dict(method=['GET']))
+    dispatcher.connect('player_get', '/players/:id',controller=players,action = 'GET_PLAYER',conditions=dict(method=['GET']))
     dispatcher.connect('players_put','/players/:id',controller=players,action = 'PUT',conditions=dict(method=['PUT']))
     dispatcher.connect('score_get', '/players/:uid/score',controller=players,action = 'GET_SCORE',conditions=dict(method=['GET']))
     dispatcher.connect('score_put','/players/:uid/score',controller=players,action = 'PUT_SCORE',conditions=dict(method=['PUT']))
 
     # Questions
     dispatcher.connect('questions_get', '/questions/:qid',controller=questions,action = 'GET',conditions=dict(method=['GET']))
-    dispatcher.connect('answer_get', '/questions/:qid/answers/:uid',controller=questions,action = 'GET_ANSWER',conditions=dict(method=['GET']))
-    dispatcher.connect('answer_put','/questions/:qid/answers/:uid',controller=questions,action = 'PUT_ANSWER',conditions=dict(method=['PUT']))
+    dispatcher.connect('answer_get', '/questions/:qid/prompt/:uid',controller=questions,action = 'GET_ANSWER',conditions=dict(method=['GET']))
+    dispatcher.connect('answer_put','/questions/:qid/prompt/:uid',controller=questions,action = 'PUT_ANSWER',conditions=dict(method=['PUT']))
 
 
     dispatcher.connect('options_gamestate', '/gamestate', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
-    dispatcher.connect('options_players', '/players', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
+    dispatcher.connect('options_player', '/players', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
+    dispatcher.connect('options_players', '/players/:id', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
     dispatcher.connect('options_questions', '/questions', controller=optionsController, action = 'OPTIONS', conditions=dict(method=['OPTIONS']))
 
     conf = {'global': {'server.socket_host':      'student01.cse.nd.edu', 
