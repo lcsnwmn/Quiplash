@@ -175,7 +175,7 @@ function getPrompt() {
 	for (var i = 1; i <= max_players; i++){
 		var xhr = new XMLHttpRequest();
 		xhr.onload = function (){
-			if (xhr.status = "200") {
+			if(xhr.status == "200"){
 				// Display Question
 				var question = JSON.parse(xhr.responseText)
 				console.log(question)
@@ -186,6 +186,7 @@ function getPrompt() {
 				for (var uid in prompt){
 					if (prompt.hasOwnProperty(uid)){
 						var answer = prompt[uid];
+					}
 				}
 				
 			}else{

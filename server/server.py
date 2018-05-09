@@ -14,8 +14,7 @@ class Gamestate(object):
         state = self.db.get_gamestate()
         if state not in options:
             print state
-            output['result'] = 'error'
-            output['message'] = state
+            output['result'] = 'lobby'
         else:
             output['result'] = state
 
